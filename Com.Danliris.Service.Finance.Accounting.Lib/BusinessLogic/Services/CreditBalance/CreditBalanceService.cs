@@ -32,75 +32,75 @@ namespace Com.Danliris.Service.Finance.Accounting.Lib.BusinessLogic.Services.Cre
             IdentityService = serviceProvider.GetService<IIdentityService>();
         }
 
-        public List<CreditBalanceViewModel> GetReport(bool isImport, string suplierName, int month, int year, int offSet, bool isForeignCurrency, int divisionId)
-        {
-            var firstDayOfMonth = new DateTime(year, month, 1);
+        //public List<CreditBalanceViewModel> GetReport(bool isImport, string suplierName, int month, int year, int offSet, bool isForeignCurrency, int divisionId)
+        //{
+        //    var firstDayOfMonth = new DateTime(year, month, 1);
 
-            IQueryable<CreditorAccountModel> query = DbContext.CreditorAccounts.Where(x => x.SupplierIsImport == isImport).AsQueryable();
-
-
-            List<CreditBalanceViewModel> result = new List<CreditBalanceViewModel>();
-            int previousMonth = month - 1;
-            int previousYear = year;
-
-            if (previousMonth == 0)
-            {
-                previousMonth = 12;
-                previousYear = year - 1;
-            }
+        //    IQueryable<CreditorAccountModel> query = DbContext.CreditorAccounts.Where(x => x.SupplierIsImport == isImport).AsQueryable();
 
 
-            if (isForeignCurrency)
-                query = query.Where(entity => entity.CurrencyCode != "IDR");
-            //else
+        //    List<CreditBalanceViewModel> result = new List<CreditBalanceViewModel>();
+        //    int previousMonth = month - 1;
+        //    int previousYear = year;
 
-            if (!isImport && !isForeignCurrency)
-                query = query.Where(entity => entity.CurrencyCode == "IDR");
+        //    if (previousMonth == 0)
+        //    {
+        //        previousMonth = 12;
+        //        previousYear = year - 1;
+        //    }
 
-            if (divisionId > 0)
-                query = query.Where(entity => entity.DivisionId == divisionId);
 
-            var queryRemainingBalance = query;
-            if (!string.IsNullOrEmpty(suplierName))
-                query = query.Where(x => x.SupplierName == suplierName);
-            else
-                queryRemainingBalance = query.Where(x => x.UnitReceiptNoteDate.HasValue && x.UnitReceiptNoteDate.Value.DateTime < firstDayOfMonth);
+        //    if (isForeignCurrency)
+        //        query = query.Where(entity => entity.CurrencyCode != "IDR");
+        //    //else
 
-            query = query.Where(x => x.UnitReceiptNoteDate.HasValue && x.UnitReceiptNoteDate.Value.Month == month && x.UnitReceiptNoteDate.Value.Year == year);
+        //    if (!isImport && !isForeignCurrency)
+        //        query = query.Where(entity => entity.CurrencyCode == "IDR");
 
-            var data = query.ToList();
-            if (string.IsNullOrEmpty(suplierName))
-                data.AddRange(queryRemainingBalance.ToList());
+        //    if (divisionId > 0)
+        //        query = query.Where(entity => entity.DivisionId == divisionId);
 
-            var grouppedData = data.GroupBy(x => new { x.SupplierCode, x.DivisionCode, x.CurrencyCode }).ToList();
-            foreach (var item in grouppedData)
-            {
-                var productsUnion = string.Join("\n", item.Where(x => x.UnitReceiptNoteDate.HasValue && x.UnitReceiptNoteDate.Value.Month == month && x.UnitReceiptNoteDate.Value.Year == year).Select(x => x.Products).ToList());
-                var uniqueProducts = string.Join("\n", productsUnion.Split("\n").Distinct());
-                //var now = DateTimeOffset.Now;
+        //    var queryRemainingBalance = query;
+        //    if (!string.IsNullOrEmpty(suplierName))
+        //        query = query.Where(x => x.SupplierName == suplierName);
+        //    else
+        //        queryRemainingBalance = query.Where(x => x.UnitReceiptNoteDate.HasValue && x.UnitReceiptNoteDate.Value.DateTime < firstDayOfMonth);
 
-                var creditBalance = new CreditBalanceViewModel()
-                {
-                    StartBalance = DbSet
-                    .AsQueryable()
-                    .Where(x => x.SupplierCode == item.Key.SupplierCode && x.DivisionCode == item.Key.DivisionCode && x.CurrencyCode == item.Key.CurrencyCode && x.UnitReceiptNoteDate.HasValue && x.UnitReceiptNoteDate.Value.DateTime < firstDayOfMonth)
-                    .ToList().Sum(x => x.UnitReceiptMutation - x.BankExpenditureNoteMutation),
-                    Products = uniqueProducts,
-                    Purchase = item.Where(x => x.UnitReceiptNoteDate.HasValue && x.UnitReceiptNoteDate.Value.Month == month && x.UnitReceiptNoteDate.Value.Year == year).Sum(x => x.UnitReceiptMutation),
-                    Payment = item.Where(x => x.UnitReceiptNoteDate.HasValue && x.UnitReceiptNoteDate.Value.Month == month && x.UnitReceiptNoteDate.Value.Year == year).Sum(x => x.BankExpenditureNoteMutation),
-                    FinalBalance = item.Sum(x => x.FinalBalance),
-                    SupplierName = item.FirstOrDefault() == null ? "" : item.FirstOrDefault().SupplierName ?? "",
-                    Currency = item.FirstOrDefault() == null ? "" : item.FirstOrDefault().CurrencyCode ?? "",
-                    CurrencyRate = item.FirstOrDefault() == null ? 1 : item.FirstOrDefault().CurrencyRate,
-                    DivisionName = item.FirstOrDefault() == null ? "" : item.FirstOrDefault().DivisionName ?? "",
-                };
+        //    query = query.Where(x => x.UnitReceiptNoteDate.HasValue && x.UnitReceiptNoteDate.Value.Month == month && x.UnitReceiptNoteDate.Value.Year == year);
 
-                creditBalance.FinalBalance = creditBalance.StartBalance + creditBalance.Purchase - creditBalance.Payment;
-                result.Add(creditBalance);
-            }
+        //    var data = query.ToList();
+        //    if (string.IsNullOrEmpty(suplierName))
+        //        data.AddRange(queryRemainingBalance.ToList());
 
-            return result.OrderBy(x => x.SupplierName).ToList();
-        }
+        //    var grouppedData = data.GroupBy(x => new { x.SupplierCode, x.DivisionCode, x.CurrencyCode }).ToList();
+        //    foreach (var item in grouppedData)
+        //    {
+        //        var productsUnion = string.Join("\n", item.Where(x => x.UnitReceiptNoteDate.HasValue && x.UnitReceiptNoteDate.Value.Month == month && x.UnitReceiptNoteDate.Value.Year == year).Select(x => x.Products).ToList());
+        //        var uniqueProducts = string.Join("\n", productsUnion.Split("\n").Distinct());
+        //        //var now = DateTimeOffset.Now;
+
+        //        var creditBalance = new CreditBalanceViewModel()
+        //        {
+        //            StartBalance = DbSet
+        //            .AsQueryable()
+        //            .Where(x => x.SupplierCode == item.Key.SupplierCode && x.DivisionCode == item.Key.DivisionCode && x.CurrencyCode == item.Key.CurrencyCode && x.UnitReceiptNoteDate.HasValue && x.UnitReceiptNoteDate.Value.DateTime < firstDayOfMonth)
+        //            .ToList().Sum(x => x.UnitReceiptMutation - x.BankExpenditureNoteMutation),
+        //            Products = uniqueProducts,
+        //            Purchase = item.Where(x => x.UnitReceiptNoteDate.HasValue && x.UnitReceiptNoteDate.Value.Month == month && x.UnitReceiptNoteDate.Value.Year == year).Sum(x => x.UnitReceiptMutation),
+        //            Payment = item.Where(x => x.UnitReceiptNoteDate.HasValue && x.UnitReceiptNoteDate.Value.Month == month && x.UnitReceiptNoteDate.Value.Year == year).Sum(x => x.BankExpenditureNoteMutation),
+        //            FinalBalance = item.Sum(x => x.FinalBalance),
+        //            SupplierName = item.FirstOrDefault() == null ? "" : item.FirstOrDefault().SupplierName ?? "",
+        //            Currency = item.FirstOrDefault() == null ? "" : item.FirstOrDefault().CurrencyCode ?? "",
+        //            CurrencyRate = item.FirstOrDefault() == null ? 1 : item.FirstOrDefault().CurrencyRate,
+        //            DivisionName = item.FirstOrDefault() == null ? "" : item.FirstOrDefault().DivisionName ?? "",
+        //        };
+
+        //        creditBalance.FinalBalance = creditBalance.StartBalance + creditBalance.Purchase - creditBalance.Payment;
+        //        result.Add(creditBalance);
+        //    }
+
+        //    return result.OrderBy(x => x.SupplierName).ToList();
+        //}
 
         public List<CreditBalanceViewModel> GetReportv2(bool isImport, string suplierName, int month, int year, int offSet, bool isForeignCurrency, int divisionId)
         {
@@ -366,7 +366,7 @@ namespace Com.Danliris.Service.Finance.Accounting.Lib.BusinessLogic.Services.Cre
 
         public MemoryStream GenerateExcel(bool isImport, string suplierName, int month, int year, int offSet, bool isForeignCurrency, int divisionId)
         {
-            var data = GetReport(isImport, suplierName, month, year, offSet, isForeignCurrency, divisionId).OrderBy(element => element.SupplierName).ToList();
+            var data = GetReportv2(isImport, suplierName, month, year, offSet, isForeignCurrency, divisionId).OrderBy(element => element.SupplierName).ToList();
 
             var divisionName = "SEMUA DIVISI";
 
@@ -452,7 +452,7 @@ namespace Com.Danliris.Service.Finance.Accounting.Lib.BusinessLogic.Services.Cre
 
         public List<CreditBalanceViewModel> GeneratePdf(bool isImport, string suplierName, int month, int year, int offSet, bool isForeignCurrency, int divisionId)
         {
-            var data = GetReport(isImport, suplierName, month, year, offSet, isForeignCurrency, divisionId).OrderBy(element => element.SupplierName).ToList();
+            var data = GetReportv2(isImport, suplierName, month, year, offSet, isForeignCurrency, divisionId).OrderBy(element => element.SupplierName).ToList();
 
             return data;
         }
