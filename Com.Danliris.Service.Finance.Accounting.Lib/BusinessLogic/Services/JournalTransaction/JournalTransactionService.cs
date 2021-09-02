@@ -342,7 +342,7 @@ namespace Com.Danliris.Service.Finance.Accounting.Lib.BusinessLogic.Services.Jou
 
         public List<JournalTransactionModel> ReadUnPostedTransactionsByPeriod(int month, int year, string referenceNo, string referenceType, bool isVB)
         {
-            var query = _DbSet.Where(w => w.Date.Month.Equals(month) && w.Date.Year.Equals(year) && w.Status.Equals("DRAFT"));
+            var query = _DbSet.Where(w => w.Date.AddHours(_IdentityService.TimezoneOffset).Month.Equals(month) && w.Date.AddHours(_IdentityService.TimezoneOffset).Year.Equals(year) && w.Status.Equals("DRAFT"));
 
             if (isVB)
                 query = query.Where(entity => entity.Description.Contains("VB"));

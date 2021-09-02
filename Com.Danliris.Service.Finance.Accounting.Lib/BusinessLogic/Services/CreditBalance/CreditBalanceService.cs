@@ -36,6 +36,7 @@ namespace Com.Danliris.Service.Finance.Accounting.Lib.BusinessLogic.Services.Cre
         //{
         //    var firstDayOfMonth = new DateTime(year, month, 1);
 
+
         //    IQueryable<CreditorAccountModel> query = DbContext.CreditorAccounts.Where(x => x.SupplierIsImport == isImport).AsQueryable();
             
         //    List<CreditBalanceViewModel> result = new List<CreditBalanceViewModel>();

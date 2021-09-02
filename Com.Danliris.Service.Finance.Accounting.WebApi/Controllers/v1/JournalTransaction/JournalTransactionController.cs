@@ -294,6 +294,8 @@ namespace Com.Danliris.Service.Finance.Accounting.WebApi.Controllers.v1.JournalT
         {
             try
             {
+                VerifyUser();
+
                 if (month.Equals(0))
                     month = DateTime.Now.Month;
                 if (year.Equals(0))

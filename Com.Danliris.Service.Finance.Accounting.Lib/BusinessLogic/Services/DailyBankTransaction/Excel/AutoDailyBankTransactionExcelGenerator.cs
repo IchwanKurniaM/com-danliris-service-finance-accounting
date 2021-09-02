@@ -93,11 +93,14 @@ namespace Com.Danliris.Service.Finance.Accounting.Lib.BusinessLogic.Services.Dai
                     dataTable.Rows.Add(data.Index, data.item.ReferenceNo, data.item.Date.AddHours(timezoneOffset).ToString("dd/MM/yyyy"), data.item.AccountBankAccountName + " " + data.item.AccountBankName+" "+ data.item.DestinationBankAccountNumber+" "+data.item.AccountBankCurrencyCode, data.item.AccountBankCurrencyCode, data.item.ReferenceType, data.item.SourceType, "IN", data.item.Nominal, data.item.Remark);
                 }
                 worksheet.Cells[row, col].LoadFromDataTable(dataTable, false);
-                worksheet.Cells[row, col, row + countData -1, listHeaderTable.Count].AutoFitColumns();
-                worksheet.Cells[row, col, row + countData -1, listHeaderTable.Count].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[row, col, row + countData -1, listHeaderTable.Count].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[row, col, row + countData -1, listHeaderTable.Count].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[row, col, row + countData -1, listHeaderTable.Count].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                if (countData != 0)
+                {
+                    worksheet.Cells[row, col, row + countData - 1, listHeaderTable.Count].AutoFitColumns();
+                    worksheet.Cells[row, col, row + countData - 1, listHeaderTable.Count].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    worksheet.Cells[row, col, row + countData - 1, listHeaderTable.Count].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                    worksheet.Cells[row, col, row + countData - 1, listHeaderTable.Count].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                    worksheet.Cells[row, col, row + countData - 1, listHeaderTable.Count].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                }
                 #endregion
 
                 #endregion
@@ -188,11 +191,14 @@ namespace Com.Danliris.Service.Finance.Accounting.Lib.BusinessLogic.Services.Dai
                     dataTable.Rows.Add(data.Index, data.item.ReferenceNo, data.item.Date.AddHours(timezoneOffset).ToString("dd/MM/yyyy"), data.item.AccountBankAccountName + " " + data.item.AccountBankName + " " + data.item.DestinationBankAccountNumber + " " + data.item.AccountBankCurrencyCode, data.item.AccountBankCurrencyCode, data.item.ReferenceType, data.item.SourceType, "OUT", data.item.Nominal, data.item.Remark);
                 }
                 worksheet.Cells[row, col].LoadFromDataTable(dataTable, false);
-                worksheet.Cells[row, col, row + countData -1, listHeaderTable.Count].AutoFitColumns();
-                worksheet.Cells[row, col, row + countData -1, listHeaderTable.Count].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[row, col, row + countData -1, listHeaderTable.Count].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[row, col, row + countData -1, listHeaderTable.Count].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                worksheet.Cells[row, col, row + countData -1, listHeaderTable.Count].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                if (countData != 0)
+                {
+                    worksheet.Cells[row, col, row + countData - 1, listHeaderTable.Count].AutoFitColumns();
+                    worksheet.Cells[row, col, row + countData - 1, listHeaderTable.Count].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    worksheet.Cells[row, col, row + countData - 1, listHeaderTable.Count].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                    worksheet.Cells[row, col, row + countData - 1, listHeaderTable.Count].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                    worksheet.Cells[row, col, row + countData - 1, listHeaderTable.Count].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                }
                 #endregion
 
                 #endregion
