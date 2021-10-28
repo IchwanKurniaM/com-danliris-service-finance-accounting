@@ -60,13 +60,13 @@ namespace Com.Danliris.Service.Finance.Accounting.Lib.BusinessLogic.Services.Cre
             {
                 var itemResult = new CreditBalanceViewModel()
                 {
-                   Currency = item.CurrencyCode,
-                   CurrencyRate = item.CurrencyRate,
-                   DivisionId = item.DivisionId,
-                   DivisionName = item.DivisionName,
-                   Products = item.Products,
-                   SupplierCode = item.SupplierCode,
-                   SupplierName = item.SupplierName
+                    Currency = item.CurrencyCode,
+                    CurrencyRate = item.CurrencyRate,
+                    DivisionId = item.DivisionId,
+                    DivisionName = item.DivisionName,
+                    Products = item.Products,
+                    SupplierCode = item.SupplierCode,
+                    SupplierName = item.SupplierName
                 };
 
                 if (item.UnitPaymentCorrectionId == 0)
@@ -150,7 +150,7 @@ namespace Com.Danliris.Service.Finance.Accounting.Lib.BusinessLogic.Services.Cre
                         StartBalanceCurrency = element.Sum(sum => sum.StartBalanceCurrency),
                         SupplierCode = element.FirstOrDefault().SupplierCode,
                         SupplierName = element.FirstOrDefault().SupplierName
-            })
+                    })
                     .ToList();
             }
 
@@ -198,30 +198,30 @@ namespace Com.Danliris.Service.Finance.Accounting.Lib.BusinessLogic.Services.Cre
                 {
                     if (item.UnitReceiptNoteDate.HasValue && item.UnitReceiptNoteDate.GetValueOrDefault().AddHours(offSet).DateTime < lastDayOfMonth.DateTime)
                     {
-                        itemResult.Purchase = item.UnitReceiptNoteDPP - item.IncomeTaxAmount;
+                        itemResult.Purchase = item.DPPCurrency - (item.IncomeTaxAmount / item.CurrencyRate);
                         itemResult.UnitReceiptNoteNo = item.UnitReceiptNoteNo;
                         itemResult.Date = item.UnitReceiptNoteDate;
+                        itemResult.IncomeTaxNo = item.IncomeTaxNo;
                     }
 
                     if (item.MemoDate.HasValue && item.MemoDate.GetValueOrDefault().AddHours(offSet).DateTime < lastDayOfMonth.DateTime)
                     {
-                        itemResult.Purchase += item.UnitReceiptNotePPN;
+                        itemResult.Purchase += item.VATAmount;
                         itemResult.UnitPaymentOrderNo = item.MemoNo;
                         itemResult.InvoiceNo = item.InvoiceNo;
-                        itemResult.IncomeTaxNo = item.IncomeTaxNo;
                     }
 
                     if (item.BankExpenditureNoteDate.HasValue && item.BankExpenditureNoteDate.GetValueOrDefault().AddHours(offSet).DateTime < lastDayOfMonth.DateTime)
                     {
                         itemResult.BankExpenditureNoteNo = item.BankExpenditureNoteNo;
-                        itemResult.Payment = item.BankExpenditureNoteMutation;
+                        itemResult.Payment = item.BankExpenditureNoteMutation / item.CurrencyRate;
                     }
                 }
                 else
                 {
                     if (item.UnitPaymentCorrectionDate.HasValue && item.UnitPaymentCorrectionDate.GetValueOrDefault().AddHours(offSet).DateTime < lastDayOfMonth.DateTime)
                     {
-                        itemResult.Purchase = item.UnitPaymentCorrectionMutation;
+                        itemResult.Purchase = item.UnitPaymentCorrectionMutation / item.CurrencyRate;
                     }
                 }
 
@@ -550,7 +550,7 @@ namespace Com.Danliris.Service.Finance.Accounting.Lib.BusinessLogic.Services.Cre
             //dt.Columns.Add(new DataColumn() { ColumnName = "Pembayaran", DataType = typeof(string) });
             //dt.Columns.Add(new DataColumn() { ColumnName = "Nomor Pembayaran", DataType = typeof(string) });
 
-            int index = 0;
+            //int index = 0;
             if (data.Count == 0)
             {
                 dt.Rows.Add("", "", "", "", "", "", "");

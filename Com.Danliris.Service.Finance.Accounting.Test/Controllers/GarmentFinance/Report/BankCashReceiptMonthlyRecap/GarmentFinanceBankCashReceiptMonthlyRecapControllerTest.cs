@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
-using Com.Danliris.Service.Finance.Accounting.Lib.BusinessLogic.GarmentFinance.Reports.DebtorCard;
+using Com.Danliris.Service.Finance.Accounting.Lib.BusinessLogic.GarmentFinance.Reports.BankCashReceiptMonthlyRecap;
 using Com.Danliris.Service.Finance.Accounting.Lib.Services.IdentityService;
 using Com.Danliris.Service.Finance.Accounting.Lib.Services.ValidateService;
 using Com.Danliris.Service.Finance.Accounting.Lib.Utilities;
-using Com.Danliris.Service.Finance.Accounting.Lib.ViewModels.GarmentFinance.Report.DebtorCard;
-using Com.Danliris.Service.Finance.Accounting.WebApi.Controllers.v1.GarmentFinance.Report.DebtorCardReport;
+using Com.Danliris.Service.Finance.Accounting.Lib.ViewModels.GarmentFinance.Report.BankCashReceiptMonthlyRecap;
+using Com.Danliris.Service.Finance.Accounting.WebApi.Controllers.v1.GarmentFinance.Report.BankCashReceiptMonthlyRecap;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -17,11 +17,11 @@ using System.Security.Claims;
 using System.Text;
 using Xunit;
 
-namespace Com.Danliris.Service.Finance.Accounting.Test.Controllers.GarmentFinance.Report.DebtorCard
+namespace Com.Danliris.Service.Finance.Accounting.Test.Controllers.GarmentFinance.Report.BankCashReceiptMonthlyRecap
 {
-    public class GarmentFinanceDebtorCardReportControllerTests
+    public class GarmentFinanceBankCashReceiptMonthlyRecapControllerTest
     {
-        protected GarmentFinanceDebtorCardReportController GetController((Mock<IIdentityService> IdentityService, Mock<IValidateService> ValidateService, Mock<IGarmentFinanceDebtorCardReportService> Service, Mock<IMapper> Mapper) mocks)
+        protected GarmentFinanceBankCashReceiptMonthlyRecapController GetController((Mock<IIdentityService> IdentityService, Mock<IValidateService> ValidateService, Mock<IGarmentFinanceBankCashReceiptMonthlyRecapService> Service, Mock<IMapper> Mapper) mocks)
         {
             var user = new Mock<ClaimsPrincipal>();
             var claims = new Claim[]
@@ -30,7 +30,7 @@ namespace Com.Danliris.Service.Finance.Accounting.Test.Controllers.GarmentFinanc
             };
             user.Setup(u => u.Claims).Returns(claims);
 
-            GarmentFinanceDebtorCardReportController controller = new GarmentFinanceDebtorCardReportController(mocks.IdentityService.Object, mocks.ValidateService.Object, mocks.Service.Object, mocks.Mapper.Object);
+            GarmentFinanceBankCashReceiptMonthlyRecapController controller = new GarmentFinanceBankCashReceiptMonthlyRecapController(mocks.IdentityService.Object, mocks.ValidateService.Object, mocks.Service.Object, mocks.Mapper.Object);
             controller.ControllerContext = new ControllerContext()
             {
                 HttpContext = new DefaultHttpContext()
@@ -43,9 +43,9 @@ namespace Com.Danliris.Service.Finance.Accounting.Test.Controllers.GarmentFinanc
             return controller;
         }
 
-        public (Mock<IIdentityService> IdentityService, Mock<IValidateService> ValidateService, Mock<IGarmentFinanceDebtorCardReportService> Service, Mock<IMapper> Mapper) GetMocks()
+        public (Mock<IIdentityService> IdentityService, Mock<IValidateService> ValidateService, Mock<IGarmentFinanceBankCashReceiptMonthlyRecapService> Service, Mock<IMapper> Mapper) GetMocks()
         {
-            return (IdentityService: new Mock<IIdentityService>(), ValidateService: new Mock<IValidateService>(), Service: new Mock<IGarmentFinanceDebtorCardReportService>(), Mapper: new Mock<IMapper>());
+            return (IdentityService: new Mock<IIdentityService>(), ValidateService: new Mock<IValidateService>(), Service: new Mock<IGarmentFinanceBankCashReceiptMonthlyRecapService>(), Mapper: new Mock<IMapper>());
         }
 
         Mock<IServiceProvider> GetServiceProvider()
@@ -81,10 +81,10 @@ namespace Com.Danliris.Service.Finance.Accounting.Test.Controllers.GarmentFinanc
         {
             var mock = GetMocks();
             mock.Service
-               .Setup(s => s.GetMonitoring(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()))
-               .Returns(new List<GarmentFinanceDebtorCardReportViewModel>());
+               .Setup(s => s.GetMonitoring(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>(), It.IsAny<int>()))
+               .Returns(new List<GarmentFinanceBankCashReceiptMonthlyRecapViewModel>());
             //Act
-            IActionResult response = GetController(mock).Get(1, 1, "code");
+            IActionResult response = GetController(mock).Get(DateTimeOffset.Now.AddDays(-3), DateTimeOffset.Now.AddDays(3));
 
             //Assert
             Assert.NotNull(response);
@@ -96,11 +96,11 @@ namespace Com.Danliris.Service.Finance.Accounting.Test.Controllers.GarmentFinanc
             var mock = GetMocks();
 
             mock.Service
-                .Setup(s => s.GetMonitoring(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()))
+                .Setup(s => s.GetMonitoring(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>(), It.IsAny<int>()))
                 .Throws(new Exception());
 
             //Act
-            IActionResult response = GetController(mock).Get(1, 1,"code");
+            IActionResult response = GetController(mock).Get(DateTimeOffset.Now.AddDays(-3), DateTimeOffset.Now.AddDays(3));
 
             //Assert
             int statusCode = this.GetStatusCode(response);
@@ -111,9 +111,9 @@ namespace Com.Danliris.Service.Finance.Accounting.Test.Controllers.GarmentFinanc
         {
             var mocks = GetMocks();
 
-            mocks.Service.Setup(f => f.GenerateExcel(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()))
+            mocks.Service.Setup(f => f.GenerateExcel(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>(), It.IsAny<int>()))
                .Returns(new Tuple<MemoryStream, string>(It.IsAny<MemoryStream>(), It.IsAny<string>()));
-            var response = GetController(mocks).GetXls(1, 1,"a");
+            var response = GetController(mocks).GetXls(DateTimeOffset.Now, DateTimeOffset.Now);
             Assert.NotNull(response);
 
         }
@@ -122,9 +122,9 @@ namespace Com.Danliris.Service.Finance.Accounting.Test.Controllers.GarmentFinanc
         {
             var mocks = GetMocks();
 
-            mocks.Service.Setup(f => f.GenerateExcel(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()))
+            mocks.Service.Setup(f => f.GenerateExcel(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>(), It.IsAny<int>()))
                .Throws(new Exception());
-            var response = GetController(mocks).GetXls(1, 1,"a");
+            var response = GetController(mocks).GetXls(DateTimeOffset.Now, DateTimeOffset.Now);
             Assert.NotNull(response);
 
         }

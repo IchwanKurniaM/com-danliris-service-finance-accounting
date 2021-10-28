@@ -77,6 +77,20 @@ namespace Com.Danliris.Service.Finance.Accounting.Test.Controllers.Reports.Expor
         }
 
         [Fact]
+        public void GetMonitoring_Success()
+        {
+            var mock = GetMocks();
+            mock.Service
+               .Setup(s => s.GetMonitoring(It.IsAny<int>(), It.IsAny<int>(), "", It.IsAny<int>()))
+               .ReturnsAsync(new List<ExportSalesDebtorReportViewModel>());
+            //Act
+            IActionResult response = GetController(mock).Get(1, 1, "code");
+
+            //Assert
+            Assert.NotNull(response);
+        }
+
+        [Fact]
         public void GetMonitoringwithError()
         {
             var mock = GetMocks();

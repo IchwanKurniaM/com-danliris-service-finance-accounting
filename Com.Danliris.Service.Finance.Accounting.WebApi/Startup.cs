@@ -97,6 +97,7 @@ using Com.Danliris.Service.Finance.Accounting.Lib.BusinessLogic.Services.Garment
 using Com.Danliris.Service.Finance.Accounting.Lib.BusinessLogic.Interfaces.GarmentFinance.MemorialDetailLocal;
 using Com.Danliris.Service.Finance.Accounting.Lib.BusinessLogic.Services.GarmentFinance.MemorialDetailLocal;
 using Com.Danliris.Service.Finance.Accounting.Lib.BusinessLogic.GarmentFinance.Reports.DebtorCard;
+using Com.Danliris.Service.Finance.Accounting.Lib.BusinessLogic.GarmentFinance.Reports.BankCashReceiptMonthlyRecap;
 using Com.Danliris.Service.Finance.Accounting.Lib.BusinessLogic.GarmentFinance.Reports.ExportSalesOutstanding;
 
 namespace Com.Danliris.Service.Finance.Accounting.WebApi
@@ -193,10 +194,13 @@ namespace Com.Danliris.Service.Finance.Accounting.WebApi
                 .AddTransient<IGarmentDownPaymentReportService, GarmentDownPaymentReportService>()
                 .AddTransient<IGarmentFinanceMemorialService, GarmentFinanceMemorialService>()
                 .AddTransient<IGarmentFinanceMemorialDetailService, GarmentFinanceMemorialDetailService>()
+                .AddTransient<IGarmentFinanceDebtorCardReportService, GarmentFinanceDebtorCardReportService>()
+                .AddTransient<IGarmentFinanceBankCashReceiptMonthlyRecapService, GarmentFinanceBankCashReceiptMonthlyRecapService>()
                 .AddTransient<IGarmentFinanceBankCashReceiptDetailLocalService, GarmentFinanceBankCashReceiptDetailLocalService>()
                 .AddTransient<IGarmentFinanceMemorialDetailLocalService, GarmentFinanceMemorialDetailLocalService>()
                 .AddTransient<IGarmentFinanceDebtorCardReportService, GarmentFinanceDebtorCardReportService>()
                 .AddTransient<IGarmentFinanceExportSalesOutstandingReportService, GarmentFinanceExportSalesOutstandingReportService>();    
+
         }
 
 

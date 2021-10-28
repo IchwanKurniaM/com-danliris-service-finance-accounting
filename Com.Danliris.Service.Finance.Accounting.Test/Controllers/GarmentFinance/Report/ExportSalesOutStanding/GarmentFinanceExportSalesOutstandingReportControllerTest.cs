@@ -3,6 +3,7 @@ using Com.Danliris.Service.Finance.Accounting.Lib.BusinessLogic.GarmentFinance.R
 using Com.Danliris.Service.Finance.Accounting.Lib.Services.IdentityService;
 using Com.Danliris.Service.Finance.Accounting.Lib.Services.ValidateService;
 using Com.Danliris.Service.Finance.Accounting.Lib.Utilities;
+using Com.Danliris.Service.Finance.Accounting.Lib.ViewModels.GarmentFinance.Report.ExportSalesOutstanding;
 using Com.Danliris.Service.Finance.Accounting.WebApi.Controllers.v1.GarmentFinance.Report.ExportOutstandingSalesReport;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -73,6 +74,20 @@ namespace Com.Danliris.Service.Finance.Accounting.Test.Controllers.GarmentFinanc
             var validationResults = new List<ValidationResult>();
             System.ComponentModel.DataAnnotations.ValidationContext validationContext = new System.ComponentModel.DataAnnotations.ValidationContext(dto, serviceProvider.Object, null);
             return new ServiceValidationException(validationContext, validationResults);
+        }
+
+        [Fact]
+        public void GetMonitoring_Success()
+        {
+            var mock = GetMocks();
+            mock.Service
+               .Setup(s => s.GetMonitoring(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()))
+               .Returns(new List<GarmentFinanceExportSalesOutstandingReportViewModel>());
+            //Act
+            IActionResult response = GetController(mock).Get(1, 1, "code");
+
+            //Assert
+            Assert.NotNull(response);
         }
 
         [Fact]
